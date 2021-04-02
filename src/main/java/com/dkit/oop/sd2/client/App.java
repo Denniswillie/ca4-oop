@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
 import java.util.Scanner;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 public class App {
     public static void main(String[] args) {
@@ -38,6 +41,11 @@ public class App {
             } else {
                 String input = socketReader.nextLine();
                 System.out.println("Client message: Response from server: \"" + input + "\"");
+                Object obj=JSONValue.parse(input);
+                JSONObject jsonObject = (JSONObject) obj;
+
+                List<String> name = (List) jsonObject.get("name");
+                System.out.println(name);
             }
 
             socketWriter.close();

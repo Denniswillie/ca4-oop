@@ -1,5 +1,6 @@
 package com.dkit.oop.sd2.server.DAOs;
 
+import com.dkit.oop.sd2.server.DTOs.Course;
 import com.dkit.oop.sd2.server.DTOs.CourseChoice;
 import com.dkit.oop.sd2.server.Exceptions.DaoException;
 
@@ -83,15 +84,14 @@ public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInt
 
 
     @Override
-    public List<CourseChoice> updateCourseChoice(int caoNumber,List<String>courseId) throws DaoException
+    public boolean updateCourseChoice(int caoNumber,List<String>courseId) throws DaoException
     {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         List<CourseChoice> courseChoice = new ArrayList<>();
-
-        try
-        {
+        boolean success = true;
+        try {
             //Get connection object using the methods in the super class (MySqlDao.java)...
             con = this.getConnection();
 
@@ -113,31 +113,41 @@ public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInt
 
             con.close();
 
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
+            success = false;
             throw new DaoException("findAllCourseChoices() " + e.getMessage());
-        } finally
-        {
-            try
-            {
-                if (rs != null)
-                {
-                    rs.close();
-                }
-                if (ps != null)
-                {
-                    ps.close();
-                }
-                if (con != null)
-                {
-                    freeConnection(con);
-                }
-            } catch (SQLException e)
-            {
-                throw new DaoException("findAllCourseChoices() " + e.getMessage());
-            }
+        } finally {
+            return success;
         }
-        return courseChoice;     // may be empty
+    }
+
+    @Override
+    public CourseChoice getCourseChoiceOfStudent(int caoNumber) throws DaoException {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        CourseChoice courseChoice = null;
+        try {
+            //Get connection object using the methods in the super class (MySqlDao.java)...
+            con = this.getConnection();
+
+            String query = "SELECT * FROM student_courses WHERE caoNumber = ?;";
+            ps = con.prepareStatement(query);
+            ps.setString(1, Integer.toString(caoNumber));
+
+            //Using a PreparedStatement to execute SQL...
+            rs = ps.executeQuery();
+            ArrayList<String> courseIds = new ArrayList<>();
+            if (rs.next()) {
+                String courseId = rs.getString("courseid");
+                courseIds.add(courseId);
+            }
+            courseChoice = new CourseChoice(caoNumber, courseIds);
+        } catch (SQLException e) {
+            throw new DaoException("findAllCourse() " + e.getMessage());
+        } finally {
+            return courseChoice;
+        }
     }
 
 
