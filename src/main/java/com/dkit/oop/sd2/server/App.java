@@ -152,6 +152,7 @@ public class App {
 //                        case CAOService.SUCCESSFUL_UPDATE_CURRENT:
 //                            break;
                         default:
+                            socketWriter.println("what the fuck");
                             break;
                     }
                 }
