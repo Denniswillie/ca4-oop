@@ -3,15 +3,15 @@ package com.dkit.oop.sd2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.dkit.oop.sd2.server.DAOs.CourseDaoInterface;
-import com.dkit.oop.sd2.server.DAOs.MySqlCourseDao;
-import com.dkit.oop.sd2.server.DAOs.MySqlStudentDao;
-import com.dkit.oop.sd2.server.DAOs.StudentDaoInterface;
+import com.dkit.oop.sd2.server.DAOs.*;
 import com.dkit.oop.sd2.server.DTOs.Course;
+import com.dkit.oop.sd2.server.DTOs.CourseChoice;
 import com.dkit.oop.sd2.server.DTOs.Student;
 import com.dkit.oop.sd2.server.Exceptions.DaoException;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -60,18 +60,73 @@ public class AppTest
 
 
 
-//    @Test
-//    public void testfindAllCourseDao() throws DaoException
-//    {
-//
-//        CourseDaoInterface courseDao = new MySqlCourseDao();
-//        List<Course>courseList = courseDao.findAllCourse();
-//        for(Course course : courseList)
-//        {
-//
-//        }
-//
-//
-//
-//    }
+    @Test
+    public void testfindAllCourseDao() throws DaoException
+    {
+        HashMap<String,Course> courseMap= new HashMap<>();
+
+        CourseDaoInterface courseDao = new MySqlCourseDao();
+        List<Course>courseList = courseDao.findAllCourse();
+        for(Course course : courseList)
+        {
+            courseMap.put(course.getCourseId(),course);
+
+        }
+        System.out.println("Course Map" + courseMap);
+
+
+    }
+
+    @Test
+    public void testGetCourseDao() throws DaoException
+    {
+        CourseDaoInterface courseDao = new MySqlCourseDao();
+        String courseId = "DK136";
+        int level = 8;
+        String title ="Maths";
+        String institution = "MIT";
+        Course expected = new Course(courseId,level,title,institution);
+        Course actual = courseDao.getCourse(courseId);
+        System.out.println(expected);
+        System.out.println(actual);
+        assertEquals(expected,actual);
+
+
+    }
+
+    @Test
+    public void testGetCourseChoiceOfStudentDao() throws DaoException
+    {
+        CourseChoiceDaoInterface courseChoiceDao = new MySqlCourseChoiceDao();
+        int caoNumber = 123456;
+        ArrayList<String>courseid = new ArrayList<>();
+        courseid.add("DK135");
+        CourseChoice expected = new CourseChoice(caoNumber,courseid);
+        CourseChoice actual = courseChoiceDao.getCourseChoiceOfStudent(caoNumber);
+        assertEquals(expected,actual);
+
+
+    }
+
+    @Test
+    public void testUpdateCourseChoiceDao() throws DaoException
+    {
+        CourseChoiceDaoInterface courseChoiceDao = new MySqlCourseChoiceDao();
+        int caoNumber = 123458;
+        ArrayList<String>courseid = new ArrayList<>();
+        courseid.add("DK137");
+        courseid.add("DK138");
+        boolean expected =courseChoiceDao.updateCourseChoice(caoNumber,courseid);
+        boolean actual = true;
+        assertEquals(expected,actual);
+
+
+    }
+
+
+
+
+
+
+
 }

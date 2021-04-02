@@ -28,30 +28,25 @@ public class CourseChoice {
     }
 
 
-    //    public void updateChoicesInput()
-//    {
-//        String ans = "y";
-//        String courseId = "";
-//        boolean flag = false;
-//        String choices = new ArrayList<>();
-//        System.out.print("Please input your caoNumber: ");
-//        int caoNumber = kb.nextInt();
-//        while(ans.equals("y"))
-//        {
-//
-//            System.out.print("Input the courseId with DK + 3 digits : ");
-//            courseId = kb.next();
-//
-//            choices.add(courseId);
-//            System.out.println("Do you want to add another course? Please enter 'y' if you want to add another again.");
-//            ans=kb.next();
-//
-//
-//        }
-//
-//
-//        selectedChoices.put(caoNumber,choices);
-//    }
+    @Override
+    public String toString() {
+        return "CourseChoice{" +
+                "student=" + student +
+                ", courses=" + courses +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CourseChoice that = (CourseChoice) o;
+        return student == that.student &&
+                courses.equals(that.courses);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(student, courses);
+    }
 }

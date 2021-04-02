@@ -61,18 +61,19 @@ public class MySqlCourseDao extends MySqlDao implements CourseDaoInterface {
 
             //Using a PreparedStatement to execute SQL...
             rs = ps.executeQuery();
-            if (rs.next()) {
+            while (rs.next())
+            {
                 String courseId = rs.getString("courseid");
                 int level = rs.getInt("level");
                 String title = rs.getString("title");
                 String institution = rs.getString("institution");
                 course = new Course(courseId, level, title, institution);
+                return course;
             }
         } catch (SQLException e) {
             throw new DaoException("findAllCourse() " + e.getMessage());
-        } finally {
-            return course;
         }
+        return null;
     }
 
     @Override

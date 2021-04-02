@@ -1,5 +1,7 @@
 package com.dkit.oop.sd2.server.DTOs;
 
+import java.util.Objects;
+
 /**
  *D00225319
  *Ethan Alexandro Yiik Hee Sia
@@ -62,5 +64,21 @@ public class Course {
                 ", level='" + level + '\'' +
                 ", institution='" + institution + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return level == course.level &&
+                courseId.equals(course.courseId) &&
+                title.equals(course.title) &&
+                institution.equals(course.institution);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(courseId, level, title, institution);
     }
 }
