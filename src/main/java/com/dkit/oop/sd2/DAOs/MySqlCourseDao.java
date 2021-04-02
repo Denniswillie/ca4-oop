@@ -56,14 +56,14 @@ public class MySqlCourseDao extends MySqlDao implements CourseDaoInterface {
             //Get connection object using the methods in the super class (MySqlDao.java)...
             con = this.getConnection();
 
-            String query = "SELECT * FROM COURSE WHERE courseId = ?;";
+            String query = "SELECT * FROM COURSE WHERE courseid = ?;";
             ps = con.prepareStatement(query);
             ps.setString(1, id);
 
             //Using a PreparedStatement to execute SQL...
             rs = ps.executeQuery();
             if (rs.next()) {
-                String courseId = rs.getString("courseId");
+                String courseId = rs.getString("courseid");
                 int level = rs.getInt("level");
                 String title = rs.getString("title");
                 String institution = rs.getString("institution");
@@ -84,7 +84,7 @@ public class MySqlCourseDao extends MySqlDao implements CourseDaoInterface {
 
         try {
             con = this.getConnection();
-            String query = "DELETE FROM COURSE WHERE courseId = ?;";
+            String query = "DELETE FROM COURSE WHERE courseid = ?;";
             ps = con.prepareStatement(query);
             ps.setString(1, courseId);
             ps.executeQuery();
