@@ -40,6 +40,8 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
             con = this.getConnection();
 
             String query = "SELECT * FROM USER";
+
+
             ps = con.prepareStatement(query);
 
             //Using a PreparedStatement to execute SQL...
@@ -134,5 +136,63 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
         return u;     // u may be null
     }
 
+    @Override
+    public User findUserLastNameContain(String lastName) throws DaoException
+    {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        User u = null;
+        try
+        {
+            con = this.getConnection();
+
+            String query = "SELECT * FROM USER WHERE LAST_NAME = ? ";
+            ps = con.prepareStatement(query);
+
+            ps.setString(1,lastName);
+
+            rs = ps.executeQuery();
+            if (rs.next())
+            {
+                int userId = rs.getInt("USER_ID");
+                String username = rs.getString("USERNAME");
+                String password = rs.getString("PASSWORD");
+                String lastname = rs.getString("LAST_NAME");
+                String firstname = rs.getString("FIRST_NAME");
+                u = new User(userId, firstname, lastname, username, password);
+            }
+        } catch (SQLException e)
+        {
+            throw new DaoException("findUserContainLastName() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (rs != null)
+                {
+                    rs.close();
+                }
+                if (ps != null)
+                {
+                    ps.close();
+                }
+                if (con != null)
+                {
+                    freeConnection(con);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findUserContainLastName() " + e.getMessage());
+            }
+        }
+        return u;     // u may be null
+    }
+
 }
+
+
+
+
+
 

@@ -19,11 +19,16 @@ package com.dkit.oop.sd2.BusinessObjects;
 
 
 
-import com.dkit.oop.sd2.DAOs.MySqlUserDao;
-import com.dkit.oop.sd2.DAOs.UserDaoInterface;
-import com.dkit.oop.sd2.DTOs.User;
+import com.dkit.oop.sd2.DAOs.CourseChoiceDaoInterface;
+import com.dkit.oop.sd2.DAOs.MySqlCourseChoiceDao;
+import com.dkit.oop.sd2.DAOs.MySqlStudentDao;
+import com.dkit.oop.sd2.DAOs.StudentDaoInterface;
+import com.dkit.oop.sd2.DTOs.Course;
+import com.dkit.oop.sd2.DTOs.CourseChoice;
+import com.dkit.oop.sd2.DTOs.Student;
 import com.dkit.oop.sd2.Exceptions.DaoException;
-import java.util.List;
+
+import java.util.*;
 
 
 public class App
@@ -31,54 +36,43 @@ public class App
 
     public static void main(String[] args)
     {
-        UserDaoInterface IUserDao = new MySqlUserDao();  //"IUse..." -> "I" for Interface
-//        // Notice that the userDao reference is an Interface type.
-//        // This allows for the use of different concrete implementations.
-//        // e.g. we could replace the MySqlUserDao with an OracleUserDao
-//        // (accessing an Oracle Database)
-//        // without changing anything in the Interface.
-//        // If the Interface doesn't change, then none of the
-//        // code below that uses the interface needs to change.
-//        // The 'contract' defined by the interface will not be broken.
-//        // This means that this code is independent of the code
-//        // used to access the database. (Reduced coupling).
-//
-//        // The Business Objects require that all User DAOs implement
-//        // the interface called "UserDaoInterface", as the code uses
-//        // only references of the interface type to access the DAO methods.
-        try
-        {
-            System.out.println("\nCall findAllUsers()");
-            List<User> users = IUserDao.findAllUsers();
+        StudentManager studentManager = new StudentManager();
+        Student s = studentManager.getStudent(123456);
 
-            if( users.isEmpty() )
-                System.out.println("There are no Users");
+        int caoNum =123457;
+        String dob ="2000-11-29";
+        String password = "123457Ab@";
+        studentManager.addStudent(new Student(caoNum,dob,password));
 
-            for( User user : users )
-                System.out.println("User: " + user.toString());
-
-            // test dao - with good username and password
-            System.out.println("\nCall: findUserByUsernamePassword()");
-            User user = IUserDao.findUserByUsernamePassword("smithj", "password");
-            if(user != null)
-                System.out.println("User found: " + user);
-            else
-                System.out.println("Username with that password not found");
-
-            // test dao - with bad username
-            user = IUserDao.findUserByUsernamePassword("madmax", "thunderdome");
-            if(user != null)
-                System.out.println("User found: " + user);
-            else
-                System.out.println("Username with that password not found");
-
-        }
-        catch( DaoException e )
-        {
-            e.printStackTrace();
-        }
+        s= studentManager.getStudent(123457);
+        System.out.println("Student: "+s);
 
 
+        CourseManager cm = new CourseManager();
+        Course c =  cm.getCourse("DK135");
+
+        String courseid ="DK136";
+        int level = 8;
+        String title = "Software";
+        String institution ="Cork University";
+        cm.addCourse(new Course(courseid,level,title,institution));
+
+        c = cm.getCourse("DK136");
+        System.out.println("Course " + c);
+
+        CourseChoiceManager ccm = new CourseChoiceManager();
+        List<String>course = new ArrayList<>();
+        course.add("DK125");
+        course.add("DK128");
+        List<String>course1 = new ArrayList<>();
+        course1.add("DK158");
+
+        ccm.updateChoices(caoNum,course);
+        ccm.updateChoices(123789,course1);
+
+
+        System.out.println("Course Choices "+ccm.getStudentChoices(caoNum));
 
     }
 }
+

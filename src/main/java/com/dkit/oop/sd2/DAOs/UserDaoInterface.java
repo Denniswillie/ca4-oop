@@ -36,6 +36,6 @@ public interface UserDaoInterface
     public User findUserByUsernamePassword(String uname, String pword) throws DaoException;
 
 
-
+    User findUserLastNameContain(String lastName) throws DaoException;
 }
 
