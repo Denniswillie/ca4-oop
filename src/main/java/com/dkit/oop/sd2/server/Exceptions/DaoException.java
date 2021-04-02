@@ -1,4 +1,4 @@
-package com.dkit.oop.sd2.Exceptions;
+package com.dkit.oop.sd2.server.Exceptions;
 
 /**
  * A 'homemade' Exception to report exceptions

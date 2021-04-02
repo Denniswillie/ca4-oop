@@ -1,4 +1,4 @@
-package com.dkit.oop.sd2.DTOs;
+package com.dkit.oop.sd2.server.DTOs;
 
 import java.util.Objects;
 
