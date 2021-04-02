@@ -38,9 +38,10 @@ public class MySqlCourseDao extends MySqlDao implements CourseDaoInterface {
                 Course c = new Course(courseId, level, title, institution);
                 courses.add(c);
             }
-            return courses;
         } catch (SQLException e) {
             throw new DaoException("findAllCourse() " + e.getMessage());
+        } finally {
+            return courses;
         }
     }
 
@@ -49,6 +50,7 @@ public class MySqlCourseDao extends MySqlDao implements CourseDaoInterface {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        Course course = null;
 
         try {
             //Get connection object using the methods in the super class (MySqlDao.java)...
@@ -65,11 +67,12 @@ public class MySqlCourseDao extends MySqlDao implements CourseDaoInterface {
                 int level = rs.getInt("level");
                 String title = rs.getString("title");
                 String institution = rs.getString("institution");
-                return new Course(courseId, level, title, institution);
+                course = new Course(courseId, level, title, institution);
             }
-            return null;
         } catch (SQLException e) {
             throw new DaoException("findAllCourse() " + e.getMessage());
+        } finally {
+            return course;
         }
     }
 
