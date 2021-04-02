@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInterface
@@ -18,7 +19,7 @@ public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInt
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<CourseChoice> courseChoice = new ArrayList<>();
+        List<CourseChoice> courseChoices = new ArrayList<>();
 
         try
         {
@@ -32,12 +33,26 @@ public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInt
 
             //Using a PreparedStatement to execute SQL...
             rs = ps.executeQuery();
+
+
             while (rs.next())
             {
                 int caoNumber = rs.getInt("caoNumber");
+
                 String courseId= rs.getString("courseid");
-                CourseChoice cc = new CourseChoice(caoNumber,courseId);
-                courseChoice.add(cc);
+                boolean isExist = false;
+                for (int i = 0; i < courseChoices.size(); i++) {
+                    if (courseChoices.get(i).getStudent() == caoNumber) {
+                        isExist = true;
+                        courseChoices.get(i).addCourse(courseId);
+                    }
+                }
+
+                if (!isExist) {
+                    ArrayList<String> temp = new ArrayList<>();
+                    temp.add(courseId);
+                    courseChoices.add(new CourseChoice(caoNumber, temp));
+                }
             }
         } catch (SQLException e)
         {
@@ -63,12 +78,12 @@ public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInt
                 throw new DaoException("findAllCourseChoices() " + e.getMessage());
             }
         }
-        return courseChoice;     // may be empty
+        return courseChoices;     // may be empty
     }
 
 
     @Override
-    public List<CourseChoice> insertCourseChoice(int caoNumber,List<String>courseId) throws DaoException
+    public List<CourseChoice> updateCourseChoice(int caoNumber,List<String>courseId) throws DaoException
     {
         Connection con = null;
         PreparedStatement ps = null;

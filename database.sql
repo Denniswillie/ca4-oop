@@ -69,7 +69,9 @@ INSERT INTO `student` (`caoNumber`, `date_of_birth`, `password`) VALUES
 
 CREATE TABLE `student_courses` (
   `caoNumber` int(11) NOT NULL,
-  `courseid` varchar(10) NOT NULL
+  `courseid` varchar(10) NOT NULL,
+   FOREIGN KEY (caoNumber) REFERENCES student(caoNumber),
+   FOREIGN KEY (courseid) REFERENCES course(courseid),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
