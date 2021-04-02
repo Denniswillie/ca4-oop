@@ -186,8 +186,7 @@ public class App {
                             socketWriter.println(response);
                             break;
                         default:
-                            System.out.println("Wrong query");
-                            break;
+                            socketWriter.println("wrong query");
                     }
                 }
                 socket.close();
