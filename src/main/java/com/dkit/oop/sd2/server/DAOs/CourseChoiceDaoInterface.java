@@ -8,5 +8,5 @@ import java.util.List;
 public interface CourseChoiceDaoInterface
 {
     public List<CourseChoice> findAllCourseChoice() throws DaoException;
-    public List<CourseChoice> insertCourseChoice(int caoNumber,List<String>courseId) throws DaoException;
+    public List<CourseChoice> updateCourseChoice(int caoNumber,List<String>courseId) throws DaoException;
 }

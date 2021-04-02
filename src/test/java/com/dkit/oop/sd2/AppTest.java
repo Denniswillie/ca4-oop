@@ -21,23 +21,23 @@ public class AppTest
     }
 
 
-    @Test
-    public void testAddStudentToStudentManager()
-    {
-        StudentManager studentManager = new StudentManager();
-
-        int caoNum =123457;
-        String dob ="2000-11-29";
-        String password = "123457Ab@";
-        Student expected = new Student(caoNum,dob,password);
-
-        studentManager.addStudent(expected);
-
-        Student actual= studentManager.getStudent(123457);
-
-        assertTrue(actual.equals(expected));
-
-    }
+//    @Test
+//    public void testAddStudentToStudentManager()
+//    {
+//        StudentManager studentManager = new StudentManager();
+//
+//        int caoNum =123457;
+//        String dob ="2000-11-29";
+//        String password = "123457Ab@";
+//        Student expected = new Student(caoNum,dob,password);
+//
+//        studentManager.addStudent(expected);
+//
+//        Student actual= studentManager.getStudent(123457);
+//
+//        assertTrue(actual.equals(expected));
+//
+//    }
     
 //    @Test
 //    tsetStudentDao(){
