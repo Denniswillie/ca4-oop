@@ -66,51 +66,56 @@ public class MySqlStudentDao extends MySqlDao implements StudentDaoInterface
         }
         return student;     // may be empty
     }
-}
 
-public boolean registerStudent(Student s)throws DaoException
-{
-    Connection con = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
-    List<Student> student = new ArrayList<>();
 
-    try
+    @Override
+     public boolean registerStudent(Student s)throws DaoException
     {
-        //Get connection object using the methods in the super class (MySqlDao.java)...
-        con = this.getConnection();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        boolean success = false;
 
-        String query = "INSERT INTO STUDENT VALUES(?,?,?)";
-
-
-        ps = con.prepareStatement(query);
-
-        ps.setInt(1,s.getCaoNumber());
-    } catch (SQLException e)
-    {
-        throw new DaoException("findAllUsers() " + e.getMessage());
-    } finally
-    {
         try
         {
-            if (rs != null)
-            {
-                rs.close();
-            }
-            if (ps != null)
-            {
-                ps.close();
-            }
-            if (con != null)
-            {
-                freeConnection(con);
-            }
+            //Get connection object using the methods in the super class (MySqlDao.java)...
+            con = this.getConnection();
+
+            String query = "INSERT INTO STUDENT VALUES(?,?,?)";
+
+
+            ps = con.prepareStatement(query);
+
+            ps.setInt(1,s.getCaoNumber());
+            ps.setString(2,s.getDayOfBirth());
+            ps.setString(3,s.getPassword());
+
+            success =(ps.executeUpdate() == 1);
         } catch (SQLException e)
         {
-            throw new DaoException("findAllUsers() " + e.getMessage());
+            throw new DaoException("registerStudent " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (rs != null)
+                {
+                    rs.close();
+                }
+                if (ps != null)
+                {
+                    ps.close();
+                }
+                if (con != null)
+                {
+                    freeConnection(con);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findAllUsers() " + e.getMessage());
+            }
         }
+        return success;
     }
-    return student;     // may be empty
-}
 
 }
