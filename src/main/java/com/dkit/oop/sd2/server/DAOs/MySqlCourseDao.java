@@ -1,8 +1,7 @@
-package com.dkit.oop.sd2.DAOs;
+package com.dkit.oop.sd2.server.DAOs;
 
-import com.dkit.oop.sd2.DTOs.Course;
-import com.dkit.oop.sd2.DTOs.Course;
-import com.dkit.oop.sd2.Exceptions.DaoException;
+import com.dkit.oop.sd2.server.DTOs.Course;
+import com.dkit.oop.sd2.server.Exceptions.DaoException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

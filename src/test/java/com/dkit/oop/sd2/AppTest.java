@@ -3,7 +3,7 @@ package com.dkit.oop.sd2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.dkit.oop.sd2.DTOs.Student;
+import com.dkit.oop.sd2.server.DTOs.Student;
 import org.junit.Test;
 
 /**
