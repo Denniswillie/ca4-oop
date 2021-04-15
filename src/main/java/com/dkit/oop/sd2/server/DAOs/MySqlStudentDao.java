@@ -1,5 +1,6 @@
 package com.dkit.oop.sd2.server.DAOs;
 
+import com.dkit.oop.sd2.server.DTOs.Course;
 import com.dkit.oop.sd2.server.DTOs.Student;
 import com.dkit.oop.sd2.server.Exceptions.DaoException;
 
@@ -124,6 +125,8 @@ public class MySqlStudentDao extends MySqlDao implements StudentDaoInterface
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        int caoId = 0;
+        String databasePassword = "";
         boolean success = false;
 
         try
@@ -131,19 +134,18 @@ public class MySqlStudentDao extends MySqlDao implements StudentDaoInterface
             //Get connection object using the methods in the super class (MySqlDao.java)...
             con = this.getConnection();
 
-            String query = "SELECT * FROM STUDENT WHERE caoNumber = ? AND password = ?";
-
-
+            String query = "SELECT * FROM STUDENT WHERE caoNumber = ? AND password = '?'";
             ps = con.prepareStatement(query);
-
             ps.setInt(1,s.getCaoNumber());
             ps.setString(2,s.getPassword());
 
             rs = ps.executeQuery(query);
-            if(rs != null)
+            if(rs!=null)
             {
                 success = true;
+                return success;
             }
+
 
         } catch (SQLException e)
         {
@@ -171,6 +173,41 @@ public class MySqlStudentDao extends MySqlDao implements StudentDaoInterface
         }
         return success;
     }
+
+    @Override
+    public Student getSpecificStudent(int caoId) throws DaoException {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Student student = null;
+
+        try {
+            //Get connection object using the methods in the super class (MySqlDao.java)...
+            con = this.getConnection();
+
+            String query = "SELECT * FROM STUDENT WHERE caoNumber = ?;";
+            ps = con.prepareStatement(query);
+            ps.setInt(1, caoId);
+
+            //Using a PreparedStatement to execute SQL...
+            rs = ps.executeQuery();
+            while (rs.next())
+            {
+                int caoNumber= rs.getInt("caoNumber");
+                String date_of_birth = rs.getString("date_of_birth");
+                String password = rs.getString("password");
+                student = new Student(caoNumber,date_of_birth, password);
+                return student;
+            }
+        } catch (SQLException e)
+        {
+             throw new DaoException("findSpecificStudent() " + e.getMessage());
+
+        }
+      return null;
+
+    }
+
 
 
 

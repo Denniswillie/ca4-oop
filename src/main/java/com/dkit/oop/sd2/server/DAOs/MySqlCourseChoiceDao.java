@@ -1,6 +1,5 @@
 package com.dkit.oop.sd2.server.DAOs;
 
-import com.dkit.oop.sd2.server.DTOs.Course;
 import com.dkit.oop.sd2.server.DTOs.CourseChoice;
 import com.dkit.oop.sd2.server.Exceptions.DaoException;
 
@@ -9,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInterface
@@ -84,7 +82,7 @@ public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInt
 
 
     @Override
-    public boolean updateCourseChoice(int caoNumber,List<String>courseId) throws DaoException
+    public boolean updateCourseChoice(int caoNumber, List<String>courseId) throws DaoException
     {
         Connection con = null;
         PreparedStatement ps = null;
