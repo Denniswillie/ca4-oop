@@ -119,6 +119,7 @@ public class App {
                                 request = CAOService.DISPLAY_COURSE + CAOService.BREAKING_CHARACTER + courseId + '\n';
                                 socketWriter.println(request);
                                 response = socketReader.nextLine();
+                                socketReader.nextLine();
                                 if (response.equals(CAOService.DISPLAY_FAILED)) {
                                     System.out.println("Failed to get course details");
                                 } else {
