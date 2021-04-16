@@ -11,6 +11,7 @@ import com.dkit.oop.sd2.server.Exceptions.DaoException;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class AppTest
         String dob ="1998-10-05";
         String password = "12545785Ab@";
         Student expected = new Student(caoNum,dob,password);
-//        studentDao.registerStudent(expected);
+        studentDao.registerStudent(expected);
         Student actual = studentDao.getSpecificStudent(caoNum);
         System.out.println(actual);
         assertTrue(actual.equals(expected));
@@ -47,9 +48,9 @@ public class AppTest
     {
 
         StudentDaoInterface studentDao = new MySqlStudentDao();
-        int caoNum =224444;
-        String dob ="1999-10-05";
-        String password = "125457Ab@";
+        int caoNum =123456;
+        String dob ="1990-30-12";
+        String password = "user123456";
         Student s = new Student(caoNum,dob,password);
         boolean expected = studentDao.login(s);
         boolean actual = true;
@@ -101,8 +102,12 @@ public class AppTest
         int caoNumber = 123456;
         ArrayList<String>courseid = new ArrayList<>();
         courseid.add("DK135");
+        courseid.add("DK136");
+        courseid.add("DK137");
+        courseChoiceDao.updateCourseChoice(caoNumber, new ArrayList<>(Arrays.asList("DK135", "DK136", "DK137")));
         CourseChoice expected = new CourseChoice(caoNumber,courseid);
         CourseChoice actual = courseChoiceDao.getCourseChoiceOfStudent(caoNumber);
+        System.out.println(actual);
         assertEquals(expected,actual);
 
 
@@ -112,7 +117,7 @@ public class AppTest
     public void testUpdateCourseChoiceDao() throws DaoException
     {
         CourseChoiceDaoInterface courseChoiceDao = new MySqlCourseChoiceDao();
-        int caoNumber = 123458;
+        int caoNumber = 123456;
         ArrayList<String>courseid = new ArrayList<>();
         courseid.add("DK137");
         courseid.add("DK138");

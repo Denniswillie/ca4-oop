@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
 import org.json.simple.JSONObject;
 
 import com.dkit.oop.sd2.core.CAOService;
@@ -92,6 +93,7 @@ public class App {
             MySqlCourseChoiceDao courseChoiceManager = new MySqlCourseChoiceDao();
             try {
                 while ((message = socketReader.readLine()) != null) {
+                    socketReader.readLine();
                     System.out.println("Server: (ClientHandler): Read command from client " + clientNumber + ": " + message);
                     String[] messageSplit = message.split(CAOService.BREAKING_CHARACTER);
                     int caoNumber;
@@ -100,93 +102,89 @@ public class App {
                     String response;
                     Course course;
                     List<Course> courses;
-                    switch (messageSplit[0]) {
-                        case CAOService.REGISTER:
-                            caoNumber = Integer.parseInt(messageSplit[1]);
-                            dateOfBirth = messageSplit[2];
-                            password = messageSplit[3];
-                            student = new Student(caoNumber, dateOfBirth, password);
-                            if (studentManager.registerStudent(student)) {
-                                response = CAOService.REGISTERED;
-                            } else {
-                                response = "REG FAILED";
-                            }
-                            socketWriter.println(response);
-                            break;
-                        case CAOService.LOGIN:
-                            caoNumber = Integer.parseInt(messageSplit[1]);
-                            dateOfBirth = messageSplit[2];
-                            password = messageSplit[3];
-                            student = new Student(caoNumber, dateOfBirth, password);
-                            if (studentManager.login(student)) {
-                                response = CAOService.LOGGED_IN;
-                            } else {
-                                response = "LOGIN FAILED";
-                            }
-                            socketWriter.println(response);
-                            break;
-                        case CAOService.LOGOUT:
-                            socketWriter.println(CAOService.LOGGED_OUT);
-                            break;
-                        case CAOService.DISPLAY_COURSE:
-                            courseId = messageSplit[1];
-                            course = courseManager.getCourse(courseId);
-                            if (course != null) {
-                                response = course.getCourseId() + "%%" + course.getLevel() + "%%" + course.getTitle() + "%%" + course.getInstitution() + '\n';
-                            } else {
-                                response = CAOService.DISPLAY_FAILED;
-                            }
-                            socketWriter.println(response);
-                            break;
-                        case CAOService.DISPLAY_ALL:
-                            courses = courseManager.findAllCourse();
+                    String title = messageSplit[0];
+                    if (title.equals(CAOService.REGISTER)) {
+                        caoNumber = Integer.parseInt(messageSplit[1]);
+                        dateOfBirth = messageSplit[2];
+                        password = messageSplit[3];
+                        student = new Student(caoNumber, dateOfBirth, password);
+                        if (studentManager.registerStudent(student)) {
+                            response = CAOService.REGISTERED;
+                        } else {
+                            response = "REG FAILED";
+                        }
+                        socketWriter.println(response);
+                    } else if (title.equals(CAOService.LOGIN)) {
+                        caoNumber = Integer.parseInt(messageSplit[1]);
+                        dateOfBirth = messageSplit[2];
+                        password = messageSplit[3];
+                        student = new Student(caoNumber, dateOfBirth, password);
+                        if (studentManager.login(student)) {
+                            response = CAOService.LOGGED_IN;
+                        } else {
+                            response = "LOGIN FAILED";
+                        }
+                        socketWriter.println(response);
+                    } else if (title.equals(CAOService.LOGOUT)) {
+                        socketWriter.println(CAOService.LOGGED_OUT);
+                    } else if (title.equals(CAOService.DISPLAY_COURSE)) {
+                        courseId = messageSplit[1];
+                        course = courseManager.getCourse(courseId);
+                        if (course != null) {
+                            response = course.getCourseId() + "%%" + course.getLevel() + "%%" + course.getTitle() + "%%" + course.getInstitution() + '\n';
+                        } else {
+                            response = CAOService.DISPLAY_FAILED;
+                        }
+                        socketWriter.println(response);
+                    } else if (title.equals(CAOService.DISPLAY_ALL)) {
+                        courses = courseManager.findAllCourse();
 
-                            if (courses.size() > 0) {
-                                Map obj=new HashMap();
-                                obj.put("status",CAOService.SUCCESSFUL_DISPLAY);
-                                obj.put("result", courses);
-                                response = JSONValue.toJSONString(obj);
-                            } else {
-                                Map obj=new HashMap();
-                                obj.put("status",CAOService.FAILED_DISPLAY_ALL);
-                                response = JSONValue.toJSONString(obj);
+                        if (courses.size() > 0) {
+                            String temp = CAOService.SUCCESSFUL_DISPLAY;
+                            for (int i = 0; i < courses.size(); i++) {
+                                temp += (CAOService.BREAKING_CHARACTER + courses.get(i).getCourseId());
+                                temp += (CAOService.BREAKING_CHARACTER + courses.get(i).getLevel());
+                                temp += (CAOService.BREAKING_CHARACTER + courses.get(i).getTitle());
+                                temp += (CAOService.BREAKING_CHARACTER + courses.get(i).getInstitution());
+                                if (i < courses.size() - 1) {
+                                    temp += CAOService.BREAKING_CHARACTER;
+                                }
                             }
-                            socketWriter.println(response);
-                            break;
-                        case CAOService.DISPLAY_CURRENT:
-                            caoNumber = Integer.parseInt(messageSplit[1]);
-                            CourseChoice courseChoice = courseChoiceManager.getCourseChoiceOfStudent(caoNumber);
-                            if (courseChoice == null) {
-                                Map obj=new HashMap();
-                                obj.put("status",CAOService.FAILED_DISPLAY_CURRENT);
-                                response = JSONValue.toJSONString(obj);
-                            } else if (courseChoice.getCourses().size() == 0) {
-                                Map obj=new HashMap();
-                                obj.put("status",CAOService.FAILED_DISPLAY_CURRENT);
-                                response = JSONValue.toJSONString(obj);
-                            } else {
-                                Map obj=new HashMap();
-                                obj.put("status",CAOService.SUCCESSFUL_DISPLAY_CURRENT);
-                                obj.put("result",courseChoice.getCourses());
-                                response = JSONValue.toJSONString(obj);
+                            response = new Gson().toJson(temp);
+                        } else {
+                            response = new Gson().toJson(CAOService.FAILED_DISPLAY_ALL);
+                        }
+                        socketWriter.println(response);
+                    } else if (title.equals(CAOService.DISPLAY_CURRENT)) {
+                        caoNumber = Integer.parseInt(messageSplit[1]);
+                        CourseChoice courseChoice = courseChoiceManager.getCourseChoiceOfStudent(caoNumber);
+                        if (courseChoice == null) {
+                            response = new Gson().toJson(CAOService.FAILED_DISPLAY_CURRENT);
+                        } else if (courseChoice.getCourses().size() == 0) {
+                            response = new Gson().toJson(CAOService.FAILED_DISPLAY_CURRENT);
+                        } else {
+                            String temp = CAOService.SUCCESSFUL_DISPLAY_CURRENT;
+                            List<String> tempList = courseChoice.getCourses();
+                            for (int i = 0; i < tempList.size(); i++) {
+                                temp += (CAOService.BREAKING_CHARACTER + tempList.get(i));
                             }
-                            socketWriter.println(response);
-                            break;
-                        case CAOService.UPDATE_CURRENT:
-                            caoNumber = Integer.parseInt(messageSplit[1]);
-                            ArrayList<String> courseIds = new ArrayList<>();
-                            for (int i = 2; i < messageSplit.length; i++) {
-                                courseIds.add(messageSplit[i]);
-                            }
-                            if (courseChoiceManager.updateCourseChoice(caoNumber, courseIds)) {
-                                response = CAOService.SUCCESSFUL_UPDATE_CURRENT;
-                            } else {
-                                response = CAOService.FAILED_DISPLAY_CURRENT;
-                            }
-                            socketWriter.println(response);
-                            break;
-                        default:
-                            socketWriter.println("wrong query");
+                            response = temp;
+                        }
+                        socketWriter.println(response);
+                    } else if (title.equals(CAOService.UPDATE_CURRENT)) {
+                        caoNumber = Integer.parseInt(messageSplit[1]);
+                        ArrayList<String> courseIds = new ArrayList<>();
+                        for (int i = 2; i < messageSplit.length; i++) {
+                            courseIds.add(messageSplit[i]);
+                        }
+                        if (courseChoiceManager.updateCourseChoice(caoNumber, courseIds)) {
+                            response = CAOService.SUCCESSFUL_UPDATE_CURRENT;
+                        } else {
+                            response = CAOService.FAILED_DISPLAY_CURRENT;
+                        }
+                        socketWriter.println(response);
+                    } else {
+                        socketWriter.println("wrong query");
                     }
                 }
                 socket.close();

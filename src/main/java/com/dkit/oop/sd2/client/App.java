@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import com.dkit.oop.sd2.core.CAOService;
 import com.dkit.oop.sd2.server.DTOs.Course;
+import com.google.gson.Gson;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -31,6 +35,7 @@ public class App {
 
             System.out.println("Client message: The Client is running and has connected to the server");
             boolean run_outer = true;
+            String regex;
             while (run_outer) {
                 System.out.println("Please enter a command: ");
                 System.out.println("0. Quit");
@@ -40,23 +45,32 @@ public class App {
                 String request = "";
                 int caoNumber;
                 String dateOfBirth, password;
+
                 if (command == 0) {
                     break;
                 } else if (command == 1) {
                     System.out.println("Enter cao number: ");
                     caoNumber = in.nextInt();
                     System.out.println("Enter date of birth");
-                    dateOfBirth = in.nextLine();
+                    regex = "^[0-9-]*$";
+                    dateOfBirth = in.next();
+                    if (!Pattern.matches(regex, dateOfBirth)) {
+                        throw new IllegalArgumentException("Only enter number and dashes");
+                    }
                     System.out.println("Enter password");
-                    password = in.nextLine();
+                    password = in.next();
                     request = CAOService.LOGIN + CAOService.BREAKING_CHARACTER + caoNumber + CAOService.BREAKING_CHARACTER + dateOfBirth + CAOService.BREAKING_CHARACTER + password + '\n';
                 } else if (command == 2) {
                     System.out.println("Enter cao number: ");
                     caoNumber = in.nextInt();
                     System.out.println("Enter date of birth");
-                    dateOfBirth = in.nextLine();
+                    dateOfBirth = in.next();
+                    regex = "^[0-9-]*$";
+                    if (!Pattern.matches(regex, dateOfBirth)) {
+                        throw new IllegalArgumentException("Only enter number and dashes");
+                    }
                     System.out.println("Enter password");
-                    password = in.nextLine();
+                    password = in.next();
                     request = CAOService.REGISTER + CAOService.BREAKING_CHARACTER + caoNumber + CAOService.BREAKING_CHARACTER + dateOfBirth + CAOService.BREAKING_CHARACTER + password + '\n';
                 } else {
                     throw new IllegalArgumentException("Wrong input");
@@ -65,6 +79,7 @@ public class App {
                 socketWriter.println(request);
 
                 String response;
+                String[] response_split;
                 boolean loggedIn = false;
                 if(command == 1) {
                     if (socketReader.nextLine().equals(CAOService.LOGGED_IN)) {
@@ -76,6 +91,7 @@ public class App {
 
                 if (loggedIn) {
                     boolean run = true;
+                    Gson gson = new Gson();
                     while (run) {
                         System.out.println("Enter command: ");
                         System.out.println("0. Quit");
@@ -94,41 +110,38 @@ public class App {
                             case 1:
                                 request = CAOService.LOGOUT + '\n';
                                 socketWriter.println(request);
-                                if (socketReader.nextLine().equals(CAOService.LOGGED_OUT)) {
-                                    run = false;
-                                }
+                                socketReader.nextLine();
+                                run = false;
                                 break;
                             case 2:
                                 System.out.println("Enter course id");
-                                courseId = in.nextLine();
+                                courseId = in.next();
                                 request = CAOService.DISPLAY_COURSE + CAOService.BREAKING_CHARACTER + courseId + '\n';
                                 socketWriter.println(request);
                                 response = socketReader.nextLine();
                                 if (response.equals(CAOService.DISPLAY_FAILED)) {
                                     System.out.println("Failed to get course details");
                                 } else {
-                                    String[] response_split = response.split(CAOService.BREAKING_CHARACTER);
-                                    System.out.println("courseId: " + response_split[0]);
-                                    System.out.println("level: " + response_split[1]);
-                                    System.out.println("title: " + response_split[2]);
-                                    System.out.println("institution: " + response_split[3]);
+                                    response_split = response.split(CAOService.BREAKING_CHARACTER);
+                                    System.out.println(Arrays.toString(response_split));
                                 }
                                 break;
                             case 3:
                                 request = CAOService.DISPLAY_ALL + '\n';
                                 socketWriter.println(request);
                                 response = socketReader.nextLine();
-                                Object obj=JSONValue.parse(response);
-                                JSONObject jsonObject = (JSONObject) obj;
-                                String status = (String) jsonObject.get("status");
-                                if (status.equals(CAOService.SUCCESSFUL_DISPLAY)) {
-                                    List<Course> courses = (List) jsonObject.get("result");
-                                    for (int i = 0; i < courses.size(); i++) {
+                                response = response.replace("\"", "");
+                                response_split = response.split(CAOService.BREAKING_CHARACTER);
+                                System.out.println(response_split[response_split.length - 1]);
+                                if (response_split[0].equals(CAOService.SUCCESSFUL_DISPLAY)) {
+                                    int i = 1;
+                                    while(i < response_split.length) {
                                         System.out.println("-------------------------------");
-                                        System.out.println("course id: " + courses.get(i).getCourseId());
-                                        System.out.println("level: " + courses.get(i).getLevel());
-                                        System.out.println("title: " + courses.get(i).getTitle());
-                                        System.out.println("institution: " + courses.get(i).getInstitution());
+                                        System.out.println("course id" + response_split[i++]);
+                                        System.out.println("level: " + response_split[i++]);
+                                        System.out.println("title: " + response_split[i++]);
+                                        System.out.println("institution: " + response_split[i++]);
+                                        i++;
                                         System.out.println("-------------------------------");
                                     }
                                 } else {
@@ -141,17 +154,14 @@ public class App {
                                 request = CAOService.DISPLAY_CURRENT + CAOService.BREAKING_CHARACTER + command + '\n';
                                 socketWriter.println(request);
                                 response = socketReader.nextLine();
-                                Object obj2=JSONValue.parse(response);
-                                JSONObject jsonObject2 = (JSONObject) obj2;
-                                String status2 = (String) jsonObject2.get("status");
-                                if (status2.equals(CAOService.SUCCESSFUL_DISPLAY_CURRENT)) {
-                                    List<Course> courses = (List) jsonObject2.get("result");
-                                    for (int i = 0; i < courses.size(); i++) {
+                                response = response.replace("\"", "");
+                                response_split = response.split(CAOService.BREAKING_CHARACTER);
+                                if (response_split[0].equals(CAOService.SUCCESSFUL_DISPLAY_CURRENT)) {
+                                    int i = 1;
+                                    while(i < response_split.length) {
                                         System.out.println("-------------------------------");
-                                        System.out.println("course id: " + courses.get(i).getCourseId());
-                                        System.out.println("level: " + courses.get(i).getLevel());
-                                        System.out.println("title: " + courses.get(i).getTitle());
-                                        System.out.println("institution: " + courses.get(i).getInstitution());
+                                        System.out.println("course id: " + response_split[i]);
+                                        i++;
                                         System.out.println("-------------------------------");
                                     }
                                 } else {
@@ -171,10 +181,12 @@ public class App {
                                 request += '\n';
                                 socketWriter.println(request);
                                 response = socketReader.nextLine();
-                                if (response.equals(CAOService.SUCCESSFUL_DISPLAY_CURRENT)) {
+                                response = response.replace("\"", "");
+                                System.out.println(response);
+                                if (response.equals(CAOService.SUCCESSFUL_UPDATE_CURRENT)) {
                                     System.out.println("Successfully updated");
                                 } else {
-                                    System.out.println("Failed to updated");
+                                    System.out.println("Failed to update");
                                 }
                                 break;
                             default:

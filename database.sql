@@ -16,6 +16,12 @@ INSERT INTO `course` (`courseid`, `level`, `title`, `institution`) VALUES
 ('DK136', 8, 'Maths', 'MIT');
 INSERT INTO `course` (`courseid`, `level`, `title`, `institution`) VALUES
 ('DK137', 8, 'Physics', 'UC Berkeley');
+INSERT INTO `course` (`courseid`, `level`, `title`, `institution`) VALUES
+('DK138', 8, 'Biology', 'Dundalk Instituition');
+INSERT INTO `course` (`courseid`, `level`, `title`, `institution`) VALUES
+('DK139', 8, 'Chemistry', 'MIT');
+INSERT INTO `course` (`courseid`, `level`, `title`, `institution`) VALUES
+('DK140', 8, 'Topology', 'UC Berkeley');
 
 CREATE TABLE `student` (
   `caoNumber` int(11) NOT NULL,

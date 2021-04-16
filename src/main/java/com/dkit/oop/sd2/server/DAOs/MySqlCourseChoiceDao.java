@@ -93,26 +93,28 @@ public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInt
             //Get connection object using the methods in the super class (MySqlDao.java)...
             con = this.getConnection();
 
-            String query = " Insert into student_courses(caoNumber, courseId)"
-                    + " values (?, ?)";
+            String query;
+            PreparedStatement preparedStmt;
 
+//            String query = "Insert into student_courses(caoNumber, courseId)" + " values (?, ?)";
+            query = "DELETE from student_courses WHERE caoNumber = ?;";
 
-
-            PreparedStatement preparedStmt = con.prepareStatement(query);
-
+            preparedStmt = con.prepareStatement(query);
             preparedStmt.setInt(1,caoNumber);
-            for(String cId : courseId)
-            {
-                preparedStmt.setString(2,cId);
-            }
-
-
             preparedStmt.execute();
 
+            query = "Insert into student_courses(caoNumber, courseId) values (?, ?)";
+            for (String id: courseId) {
+                preparedStmt = con.prepareStatement(query);
+                preparedStmt.setInt(1,caoNumber);
+                preparedStmt.setString(2, id);
+                preparedStmt.execute();
+            }
             con.close();
 
         } catch (SQLException e) {
             success = false;
+            System.out.println(e);
             throw new DaoException("findAllCourseChoices() " + e.getMessage());
         } finally {
             return success;
@@ -136,7 +138,7 @@ public class MySqlCourseChoiceDao extends MySqlDao implements CourseChoiceDaoInt
             //Using a PreparedStatement to execute SQL...
             rs = ps.executeQuery();
             ArrayList<String> courseIds = new ArrayList<>();
-            if (rs.next()) {
+            while (rs.next()) {
                 String courseId = rs.getString("courseid");
                 courseIds.add(courseId);
             }

@@ -127,23 +127,19 @@ public class MySqlStudentDao extends MySqlDao implements StudentDaoInterface
         ResultSet rs = null;
         int caoId = 0;
         String databasePassword = "";
-        boolean success = false;
 
         try
         {
             //Get connection object using the methods in the super class (MySqlDao.java)...
             con = this.getConnection();
 
-            String query = "SELECT * FROM STUDENT WHERE caoNumber = ? AND password = '?'";
+            String query = "SELECT * FROM STUDENT WHERE caoNumber = " + s.getCaoNumber() + " AND password = '" + s.getPassword() + "' ;";
             ps = con.prepareStatement(query);
-            ps.setInt(1,s.getCaoNumber());
-            ps.setString(2,s.getPassword());
 
             rs = ps.executeQuery(query);
-            if(rs!=null)
+            if(rs.next())
             {
-                success = true;
-                return success;
+                return true;
             }
 
 
@@ -171,7 +167,7 @@ public class MySqlStudentDao extends MySqlDao implements StudentDaoInterface
                 throw new DaoException("login() " + e.getMessage());
             }
         }
-        return success;
+        return false;
     }
 
     @Override
